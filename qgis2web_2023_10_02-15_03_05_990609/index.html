@@ -1,0 +1,2340 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <style>
+        #map {
+            width: 3427px;
+            height: 1872px;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/multi-style-layer.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="data/ne_10m_admin_2_counties_3.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        }).fitBounds([[19.14884449946202,-173.59816812187367],[66.36886972175533,-87.11229304895679]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_StamenTerrainLines_0');
+        map.getPane('pane_StamenTerrainLines_0').style.zIndex = 400;
+        var layer_StamenTerrainLines_0 = L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain-lines/{z}/{x}/{y}.png', {
+            pane: 'pane_StamenTerrainLines_0',
+            opacity: 1.0,
+            attribution: '<a href="https://maps.stamen.com">Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_StamenTerrainLines_0;
+        map.addLayer(layer_StamenTerrainLines_0);
+        map.createPane('pane_StamenTerrainLabels_1');
+        map.getPane('pane_StamenTerrainLabels_1').style.zIndex = 401;
+        var layer_StamenTerrainLabels_1 = L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain-labels/{z}/{x}/{y}.png', {
+            pane: 'pane_StamenTerrainLabels_1',
+            opacity: 1.0,
+            attribution: '<a href="https://maps.stamen.com">Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_StamenTerrainLabels_1;
+        map.addLayer(layer_StamenTerrainLabels_1);
+        map.createPane('pane_StamenTerrainBackground_2');
+        map.getPane('pane_StamenTerrainBackground_2').style.zIndex = 402;
+        var layer_StamenTerrainBackground_2 = L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/terrain-background/{z}/{x}/{y}.png', {
+            pane: 'pane_StamenTerrainBackground_2',
+            opacity: 1.0,
+            attribution: '<a href="https://maps.stamen.com">Map tiles by Stamen Design, under CC BY 3.0. Data by OpenStreetMap, under ODbL</a>',
+            minZoom: 1,
+            maxZoom: 28,
+            minNativeZoom: 0,
+            maxNativeZoom: 20
+        });
+        layer_StamenTerrainBackground_2;
+        map.addLayer(layer_StamenTerrainBackground_2);
+        function pop_ne_10m_admin_2_counties_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">Name</th>\
+                        <td>' + (feature.properties['NAME'] !== null ? autolinker.link(feature.properties['NAME'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Region</th>\
+                        <td>' + (feature.properties['REGION'] !== null ? autolinker.link(feature.properties['REGION'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Area (sq km)</th>\
+                        <td>' + (feature.properties['AREA_SQKM'] !== null ? autolinker.link(feature.properties['AREA_SQKM'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Latitude</th>\
+                        <td>' + (feature.properties['latitude'] !== null ? autolinker.link(feature.properties['latitude'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Longitude</th>\
+                        <td>' + (feature.properties['longitude'] !== null ? autolinker.link(feature.properties['longitude'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#30123b',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#36205e',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#3b2e7e',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#3f3c99',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#424ab2',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#4456c8',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#4664da',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#4770e8',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#467cf3',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#4688fb',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#4295ff',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#3ba0fd',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#33adf7',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#2ab9ee',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#22c4e3',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#1cced7',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#18d8c9',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#18e0bd',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#1de7b2',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#27eea5',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#34f396',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#44f786',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#56fa75',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#69fd66',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#7dff56',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#8eff49',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#9efd3f',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#aafb39',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#b7f735',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#c3f134',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#d0ea34',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#dae336',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#e4da38',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#edd03a',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#f4c73a',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#f9bc39',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#fcb136',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#fea531',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#fe972b',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#fd8926',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#fa7a1f',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#f66c19',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#f15d13',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#eb510e',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#e4460a',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#dd3c08',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#d43305',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#ca2a04',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#be2102',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#b31a01',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#a51301',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#970e01',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#870802',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#7a0403',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#30123b',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#36205e',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#3b2e7e',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#3f3c99',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#424ab2',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#4456c8',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#4664da',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#4770e8',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#467cf3',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#4688fb',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#4295ff',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#3ba0fd',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#33adf7',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#2ab9ee',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#22c4e3',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#1cced7',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#18d8c9',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#18e0bd',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#1de7b2',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#27eea5',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#34f396',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#44f786',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#56fa75',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#69fd66',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#7dff56',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#8eff49',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#9efd3f',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#aafb39',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#b7f735',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#c3f134',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#d0ea34',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#dae336',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#e4da38',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#edd03a',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#f4c73a',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#f9bc39',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#fcb136',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#fea531',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#fe972b',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#fd8926',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#fa7a1f',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#f66c19',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#f15d13',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#eb510e',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#e4460a',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#dd3c08',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#d43305',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#ca2a04',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#be2102',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#b31a01',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#a51301',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#970e01',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#870802',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        var pattern_ne_10m_admin_2_counties_3_0 = new L.StripePattern({
+            weight: 0.3,
+            spaceWeight: 2.0,
+            color: '#7a0403',
+            opacity: 1.0,
+            spaceOpacity: 0,
+            angle: 225
+        });
+        pattern_ne_10m_admin_2_counties_3_0.addTo(map);
+        function style_ne_10m_admin_2_counties_3_0(feature) {
+            switch(String(feature.properties['REGION'])) {
+                case 'AK':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'AL':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'AR':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'AZ':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'CA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'CO':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'CT':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'DC':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'DE':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'FL':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'GA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'HI':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'IA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'ID':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'IL':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'IN':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'KS':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'KY':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'LA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'MA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'MD':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'ME':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'MI':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'MN':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'MO':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'MS':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'MT':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'NC':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'ND':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'NE':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'NH':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'NJ':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'NM':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'NV':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'NY':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'OH':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'OK':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'OR':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'PA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'PR':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'RI':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'SC':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'SD':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'TN':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'TX':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'UT':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'VA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'VI':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'VT':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'WA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'WI':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'WV':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'WY':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+                case 'NULL':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                stroke: false,
+                fillOpacity: 1,
+                fillPattern: pattern_ne_10m_admin_2_counties_3_0,
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        function style_ne_10m_admin_2_counties_3_1(feature) {
+            switch(String(feature.properties['REGION'])) {
+                case 'AK':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(48,18,59,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'AL':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(54,32,94,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'AR':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(59,46,126,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'AZ':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(63,60,153,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'CA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(66,74,178,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'CO':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(68,86,200,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'CT':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(70,100,218,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'DC':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(71,112,232,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'DE':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(70,124,243,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'FL':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(70,136,251,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'GA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(66,149,255,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'HI':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(59,160,253,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'IA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(51,173,247,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'ID':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(42,185,238,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'IL':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(34,196,227,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'IN':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(28,206,215,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'KS':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(24,216,201,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'KY':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(24,224,189,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'LA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(29,231,178,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'MA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(39,238,165,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'MD':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(52,243,150,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'ME':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(68,247,134,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'MI':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(86,250,117,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'MN':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(105,253,102,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'MO':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(125,255,86,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'MS':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(142,255,73,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'MT':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(158,253,63,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'NC':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(170,251,57,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'ND':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(183,247,53,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'NE':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(195,241,52,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'NH':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(208,234,52,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'NJ':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(218,227,54,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'NM':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(228,218,56,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'NV':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(237,208,58,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'NY':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(244,199,58,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'OH':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(249,188,57,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'OK':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(252,177,54,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'OR':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(254,165,49,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'PA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(254,151,43,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'PR':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(253,137,38,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'RI':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(250,122,31,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'SC':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(246,108,25,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'SD':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(241,93,19,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'TN':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(235,81,14,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'TX':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(228,70,10,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'UT':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(221,60,8,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'VA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(212,51,5,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'VI':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(202,42,4,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'VT':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(190,33,2,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'WA':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(179,26,1,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'WI':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(165,19,1,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'WV':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(151,14,1,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'WY':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(135,8,2,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'NULL':
+                    return {
+                pane: 'pane_ne_10m_admin_2_counties_3',
+                opacity: 1,
+                color: 'rgba(122,4,3,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_ne_10m_admin_2_counties_3');
+        map.getPane('pane_ne_10m_admin_2_counties_3').style.zIndex = 403;
+        map.getPane('pane_ne_10m_admin_2_counties_3').style['mix-blend-mode'] = 'normal';
+        var layer_ne_10m_admin_2_counties_3 = new L.geoJson.multiStyle(json_ne_10m_admin_2_counties_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_ne_10m_admin_2_counties_3',
+            layerName: 'layer_ne_10m_admin_2_counties_3',
+            pane: 'pane_ne_10m_admin_2_counties_3',
+            onEachFeature: pop_ne_10m_admin_2_counties_3,
+            styles: [style_ne_10m_admin_2_counties_3_0,style_ne_10m_admin_2_counties_3_1,]
+        });
+        bounds_group.addLayer(layer_ne_10m_admin_2_counties_3);
+        map.addLayer(layer_ne_10m_admin_2_counties_3);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'ne_10m_admin_2_counties<br /><table><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_AK0.png" /></td><td>AK</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_AL1.png" /></td><td>AL</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_AR2.png" /></td><td>AR</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_AZ3.png" /></td><td>AZ</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_CA4.png" /></td><td>CA</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_CO5.png" /></td><td>CO</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_CT6.png" /></td><td>CT</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_DC7.png" /></td><td>DC</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_DE8.png" /></td><td>DE</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_FL9.png" /></td><td>FL</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_GA10.png" /></td><td>GA</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_HI11.png" /></td><td>HI</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_IA12.png" /></td><td>IA</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_ID13.png" /></td><td>ID</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_IL14.png" /></td><td>IL</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_IN15.png" /></td><td>IN</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_KS16.png" /></td><td>KS</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_KY17.png" /></td><td>KY</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_LA18.png" /></td><td>LA</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_MA19.png" /></td><td>MA</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_MD20.png" /></td><td>MD</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_ME21.png" /></td><td>ME</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_MI22.png" /></td><td>MI</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_MN23.png" /></td><td>MN</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_MO24.png" /></td><td>MO</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_MS25.png" /></td><td>MS</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_MT26.png" /></td><td>MT</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_NC27.png" /></td><td>NC</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_ND28.png" /></td><td>ND</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_NE29.png" /></td><td>NE</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_NH30.png" /></td><td>NH</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_NJ31.png" /></td><td>NJ</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_NM32.png" /></td><td>NM</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_NV33.png" /></td><td>NV</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_NY34.png" /></td><td>NY</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_OH35.png" /></td><td>OH</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_OK36.png" /></td><td>OK</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_OR37.png" /></td><td>OR</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_PA38.png" /></td><td>PA</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_PR39.png" /></td><td>PR</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_RI40.png" /></td><td>RI</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_SC41.png" /></td><td>SC</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_SD42.png" /></td><td>SD</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_TN43.png" /></td><td>TN</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_TX44.png" /></td><td>TX</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_UT45.png" /></td><td>UT</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_VA46.png" /></td><td>VA</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_VI47.png" /></td><td>VI</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_VT48.png" /></td><td>VT</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_WA49.png" /></td><td>WA</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_WI50.png" /></td><td>WI</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_WV51.png" /></td><td>WV</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_WY52.png" /></td><td>WY</td></tr><tr><td style="text-align: center;"><img src="legend/ne_10m_admin_2_counties_3_53.png" /></td><td></td></tr></table>': layer_ne_10m_admin_2_counties_3,"Stamen Terrain Background": layer_StamenTerrainBackground_2,"Stamen Terrain Labels": layer_StamenTerrainLabels_1,"Stamen Terrain Lines": layer_StamenTerrainLines_0,}).addTo(map);
+        setBounds();
+        map.addControl(new L.Control.Search({
+            layer: layer_ne_10m_admin_2_counties_3,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'NAME'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        </script>
+    </body>
+</html>
